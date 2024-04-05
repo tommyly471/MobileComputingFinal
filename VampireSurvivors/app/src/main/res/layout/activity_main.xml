@@ -16,4 +16,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <RelativeLayout
+        android:id="@+id/parentLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Button
+            android:id="@+id/movableButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Character" />
+
+    </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
