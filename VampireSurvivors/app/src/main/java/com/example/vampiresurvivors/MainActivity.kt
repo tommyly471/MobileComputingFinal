@@ -10,9 +10,26 @@ import android.view.MotionEvent
 import android.widget.Button
 import android.widget.RelativeLayout
 import android.animation.ObjectAnimator
+import android.widget.ImageView
+import kotlin.random.Random
+import android.os.Handler
+import android.os.Looper
+
 
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var parentLayout: RelativeLayout
+    private lateinit var movableButton: Button
+    private val handler = Handler(Looper.getMainLooper())
+    private val monsters = mutableListOf<ImageView>()
+
+    private val spawnMonsterRunnable = object : Runnable {
+        override fun run() {
+            spawnMonster()
+            handler.postDelayed(this, 10000)
+        }
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -23,8 +40,12 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        val parentLayout = findViewById<RelativeLayout>(R.id.parentLayout)
-        val movableButton = findViewById<Button>(R.id.movableButton)
+        parentLayout = findViewById<RelativeLayout>(R.id.parentLayout)
+
+        handler.post(spawnMonsterRunnable)
+        handler.post(updateMonsterAnimationsRunnable)
+
+        movableButton = findViewById<Button>(R.id.movableButton)
 
         parentLayout.setOnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_DOWN) {
@@ -33,7 +54,7 @@ class MainActivity : AppCompatActivity() {
                 val targetY = event.y - movableButton.height / 2.0f
 
                 val animatorX = ObjectAnimator.ofFloat(movableButton, "x", movableButton.x, targetX)
-                animatorX.duration = 500 // Animation duration in milliseconds
+                animatorX.duration = 500
                 animatorX.start()
 
                 val animatorY = ObjectAnimator.ofFloat(movableButton, "y", movableButton.y, targetY)
@@ -42,5 +63,78 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
+
     }
+
+    private fun spawnMonster() {
+        val monster = ImageView(this).apply {
+            setImageResource(R.drawable.monster_icon)
+            val sizeInPixels = dpToPx(75)
+            layoutParams = RelativeLayout.LayoutParams(sizeInPixels, sizeInPixels)
+        }
+
+        var x: Int
+        var y: Int
+        val minDistance = dpToPx(100)
+
+        do {
+            x = Random.nextInt(parentLayout.width - monster.layoutParams.width)
+            y = Random.nextInt(parentLayout.height - monster.layoutParams.height)
+        } while (!isPositionValid(x.toFloat(), y.toFloat(), minDistance))
+
+
+        monster.x = x.toFloat()
+        monster.y = y.toFloat()
+
+        parentLayout.addView(monster)
+        monsters.add(monster)
+        animateMonster(monster)
+    }
+
+    private fun isPositionValid(x: Float, y: Float, minDistance: Int): Boolean {
+        val buttonCenterX = movableButton.x + movableButton.width / 2
+        val buttonCenterY = movableButton.y + movableButton.height / 2
+        val monsterCenterX = x + dpToPx(75) / 2
+        val monsterCenterY = y + dpToPx(75) / 2
+
+        val distance = Math.sqrt(
+            ((monsterCenterX - buttonCenterX) * (monsterCenterX - buttonCenterX) +
+                    (monsterCenterY - buttonCenterY) * (monsterCenterY - buttonCenterY)).toDouble()
+        )
+
+        return distance >= minDistance
+    }
+
+    private val updateMonsterAnimationsRunnable = object : Runnable {
+        override fun run() {
+            monsters.forEach { animateMonster(it) }
+            handler.postDelayed(this, 1000)
+        }
+    }
+
+    private fun animateMonster(monster: ImageView) {
+        monster.animate().cancel()
+
+        val targetX = movableButton.x + movableButton.width / 2 - monster.width / 2
+        val targetY = movableButton.y + movableButton.height / 2 - monster.height / 2
+
+        val animatorX = ObjectAnimator.ofFloat(monster, "x", monster.x, targetX)
+        animatorX.duration = 3000
+        animatorX.start()
+
+        val animatorY = ObjectAnimator.ofFloat(monster, "y", monster.y, targetY)
+        animatorY.duration = 3000
+        animatorY.start()
+    }
+    private fun dpToPx(dp: Int): Int {
+        val density = resources.displayMetrics.density
+        return (dp * density).toInt()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        handler.removeCallbacks(spawnMonsterRunnable)
+        handler.removeCallbacks(updateMonsterAnimationsRunnable)
+    }
+
 }
