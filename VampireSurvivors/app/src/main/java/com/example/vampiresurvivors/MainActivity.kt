@@ -14,7 +14,8 @@ import android.widget.ImageView
 import kotlin.random.Random
 import android.os.Handler
 import android.os.Looper
-
+import androidx.core.content.ContextCompat
+import com.google.android.material.snackbar.Snackbar
 
 
 class MainActivity : AppCompatActivity() {
@@ -44,6 +45,17 @@ class MainActivity : AppCompatActivity() {
 
         handler.post(spawnMonsterRunnable)
         handler.post(updateMonsterAnimationsRunnable)
+
+        // Create a Runnable to periodically check for collisions
+        val collisionCheckRunnable = object : Runnable {
+            override fun run() {
+                checkForCollisions()
+                handler.postDelayed(this, 500)  // Check every 500ms
+            }
+        }
+
+        // Start the collision check
+        handler.post(collisionCheckRunnable)
 
         movableButton = findViewById<Button>(R.id.movableButton)
 
@@ -135,6 +147,60 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         handler.removeCallbacks(spawnMonsterRunnable)
         handler.removeCallbacks(updateMonsterAnimationsRunnable)
+    }
+
+    private fun checkForCollisions() {
+        val buttonRect = getRectForButton(movableButton)
+
+        monsters.forEach { monster ->
+            val monsterRect = getRectForMonster(monster)
+
+            if (buttonRect.intersect(monsterRect)) {
+                // Collision detected, remove all monsters and show Snackbar
+                clearMonsters()
+                showGameOverSnackbar()
+            }
+        }
+    }
+
+    // Define the method to clear all monsters
+    private fun clearMonsters() {
+        monsters.forEach { monster ->
+            parentLayout.removeView(monster)
+        }
+        monsters.clear()
+    }
+
+    // Define a method to show the Snackbar
+    private fun showGameOverSnackbar() {
+        Snackbar.make(parentLayout, "Game Over!", Snackbar.LENGTH_LONG)
+            .setAction("Restart") { restartGame() }  // Optional restart action
+            .setActionTextColor(ContextCompat.getColor(this, R.color.black))
+            .show()
+    }
+
+    // Helper method to get the button's bounds
+    private fun getRectForButton(button: Button): android.graphics.Rect {
+        val left = button.x.toInt()
+        val top = button.y.toInt()
+        val right = left + button.width
+        val bottom = top + button.height
+        return android.graphics.Rect(left, top, right, bottom)
+    }
+
+    // Helper method to get the monster's bounds
+    private fun getRectForMonster(monster: ImageView): android.graphics.Rect {
+        val left = monster.x.toInt()
+        val top = monster.y.toInt()
+        val right = left + monster.layoutParams.width
+        val bottom = top + monster.layoutParams.height
+        return android.graphics.Rect(left, top, right, bottom)
+    }
+
+    // Method to restart the game (optional)
+    private fun restartGame() {
+        // Code to restart the game, such as restarting the spawning of monsters
+        handler.post(spawnMonsterRunnable)
     }
 
 }
