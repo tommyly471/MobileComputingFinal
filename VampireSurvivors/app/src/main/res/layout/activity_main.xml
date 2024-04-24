@@ -17,7 +17,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:background="@android:color/darker_gray">
+        android:background="@android:color/holo_orange_light">
 
         <!-- Level Difficulty Label -->
         <LinearLayout
@@ -99,11 +99,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <Button
+        <ImageButton
             android:id="@+id/movableButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Character" />
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:text="Character"
+            android:background="@drawable/character"/>
 
     </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

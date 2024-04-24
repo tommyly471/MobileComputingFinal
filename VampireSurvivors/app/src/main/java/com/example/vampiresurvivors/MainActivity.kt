@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import android.view.MotionEvent
-import android.widget.Button
+import android.widget.ImageButton
 import android.widget.RelativeLayout
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
@@ -22,7 +22,7 @@ import kotlin.math.sqrt
 class MainActivity : AppCompatActivity() {
 
     private lateinit var parentLayout: RelativeLayout
-    private lateinit var movableButton: Button
+    private lateinit var movableButton: ImageButton
     private val handler = Handler(Looper.getMainLooper())
     private val monsters = mutableListOf<ImageView>()
 
@@ -161,6 +161,7 @@ class MainActivity : AppCompatActivity() {
                 // Collision detected, remove all monsters and show Snackbar
                 clearMonsters()
                 showGameOverSnackbar()
+                return
             }
         }
     }
@@ -182,7 +183,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Helper method to get the button's bounds
-    private fun getRectForButton(button: Button): android.graphics.Rect {
+    private fun getRectForButton(button: ImageButton): android.graphics.Rect {
         val left = button.x.toInt()
         val top = button.y.toInt()
         val right = left + button.width
