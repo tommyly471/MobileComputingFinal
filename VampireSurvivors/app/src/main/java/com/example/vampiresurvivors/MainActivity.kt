@@ -82,7 +82,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun spawnMonster() {
         val monster = ImageView(this).apply {
-            setImageResource(R.drawable.monster_icon)
+            setImageResource(R.drawable.skeleton)
             val sizeInPixels = dpToPx(75)
             layoutParams = RelativeLayout.LayoutParams(sizeInPixels, sizeInPixels)
         }

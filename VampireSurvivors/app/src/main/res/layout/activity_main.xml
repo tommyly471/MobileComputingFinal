@@ -7,6 +7,11 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <include
+        layout="@layout/background_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
     <!-- Top UI bar for game information -->
     <LinearLayout
         android:id="@+id/topUiLayout"
