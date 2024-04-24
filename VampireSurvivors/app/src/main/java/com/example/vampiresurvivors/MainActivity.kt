@@ -1,7 +1,6 @@
 package com.example.vampiresurvivors
 
 import android.os.Bundle
-import android.util.AttributeSet
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -10,12 +9,14 @@ import android.view.MotionEvent
 import android.widget.Button
 import android.widget.RelativeLayout
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.widget.ImageView
 import kotlin.random.Random
 import android.os.Handler
 import android.os.Looper
 import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
+import kotlin.math.sqrt
 
 
 class MainActivity : AppCompatActivity() {
@@ -31,6 +32,7 @@ class MainActivity : AppCompatActivity() {
             handler.postDelayed(this, 10000)
         }
     }
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -41,7 +43,7 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        parentLayout = findViewById<RelativeLayout>(R.id.parentLayout)
+        parentLayout = findViewById(R.id.parentLayout)
 
         handler.post(spawnMonsterRunnable)
         handler.post(updateMonsterAnimationsRunnable)
@@ -57,7 +59,7 @@ class MainActivity : AppCompatActivity() {
         // Start the collision check
         handler.post(collisionCheckRunnable)
 
-        movableButton = findViewById<Button>(R.id.movableButton)
+        movableButton = findViewById(R.id.movableButton)
 
         parentLayout.setOnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_DOWN) {
@@ -109,7 +111,7 @@ class MainActivity : AppCompatActivity() {
         val monsterCenterX = x + dpToPx(75) / 2
         val monsterCenterY = y + dpToPx(75) / 2
 
-        val distance = Math.sqrt(
+        val distance = sqrt(
             ((monsterCenterX - buttonCenterX) * (monsterCenterX - buttonCenterX) +
                     (monsterCenterY - buttonCenterY) * (monsterCenterY - buttonCenterY)).toDouble()
         )
